@@ -1,20 +1,53 @@
+import { useState } from "react";
 import { requestNotificationPermission, triggerNotification } from "./function";
 
 const NotificationButton = () => {
+  const [inputMessage, setInputMessage] = useState("");
+
   const handleRequestPermission = async () => {
     await requestNotificationPermission();
   };
 
   const handleTriggerNotification = () => {
-    triggerNotification();
+    if (!inputMessage) return;
+
+    triggerNotification(inputMessage);
   };
 
   return (
-    <div>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 12,
+      }}
+    >
+      <form
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 12,
+        }}
+        onSubmit={(e) => {
+          e.preventDefault();
+          setInputMessage("");
+        }}
+      >
+        <input
+          placeholder="Notification message"
+          value={inputMessage}
+          onChange={(e) => setInputMessage(e.target.value)}
+          type="text"
+          required
+        />
+        <button onClick={handleTriggerNotification}>Show Notification</button>
+      </form>
+
       <button onClick={handleRequestPermission}>
         Request Notification Permission
       </button>
-      <button onClick={handleTriggerNotification}>Show Notification</button>
     </div>
   );
 };

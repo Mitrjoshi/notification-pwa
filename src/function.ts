@@ -7,11 +7,11 @@ export async function requestNotificationPermission() {
   }
 }
 
-export function triggerNotification() {
+export function triggerNotification(message: string) {
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.ready.then((registration) => {
       registration.showNotification("Notification", {
-        body: "This is a notification triggered from a button!",
+        body: message,
         icon: "/vite.svg",
       });
     });
