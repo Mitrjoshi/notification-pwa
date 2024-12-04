@@ -8,7 +8,14 @@ const NotificationButton = () => {
     await requestNotificationPermission();
   };
 
-  const handleTriggerNotification = () => {
+  const handleTriggerNotification = async () => {
+    const permissionGranted = await requestNotificationPermission();
+
+    if (!permissionGranted) {
+      alert("Notification permission denied");
+      return;
+    }
+
     if (!inputMessage) return;
 
     triggerNotification(inputMessage);
