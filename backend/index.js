@@ -33,6 +33,7 @@ app.post("/api/send-notification", async (req, res) => {
   const payload = JSON.stringify({
     title: "Sprite",
     body: message || "This is a default message",
+    icon: "/sprite.svg",
   });
 
   try {

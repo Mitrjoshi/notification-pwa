@@ -1,16 +1,20 @@
 self.addEventListener("push", (event) => {
   console.log("Push event received:", event);
 
+  // Parse the payload if it exists
   const data = event.data?.json() || {
     title: "Default Title",
-    body: "Default Body",
+    body: "Default message body",
   };
+
   const { title, body } = data;
 
   const options = {
-    body: body || "Default notification body",
-    icon: "/sprite.svg", // Path to your app's icon
+    body: body || "No content available.",
+    icon: "/sprite.svg", // Update with your icon path
+    badge: "/sprite.svg", // Optional badge icon
   };
 
+  // Show the notification
   event.waitUntil(self.registration.showNotification(title, options));
 });
