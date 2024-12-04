@@ -4,7 +4,7 @@ self.addEventListener("push", (event) => {
 
   const options = {
     body: body || "Default notification body",
-    icon: "/vite.svg",
+    icon: "/sprite.svg",
   };
 
   event.waitUntil(

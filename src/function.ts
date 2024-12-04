@@ -12,7 +12,7 @@ export function triggerNotification(message: string) {
     navigator.serviceWorker.ready.then((registration) => {
       registration.showNotification("Notification", {
         body: message,
-        icon: "/vite.svg",
+        icon: "/sprite.svg",
       });
     });
   }
