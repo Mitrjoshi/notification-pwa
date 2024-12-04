@@ -1,5 +1,9 @@
-import { useState } from "react";
-import { requestNotificationPermission, triggerNotification } from "./function";
+import { useEffect, useState } from "react";
+import {
+  requestNotificationPermission,
+  subscribeToPushNotifications,
+  triggerNotification,
+} from "./function";
 
 const NotificationButton = () => {
   const [inputMessage, setInputMessage] = useState("");
@@ -20,6 +24,17 @@ const NotificationButton = () => {
 
     triggerNotification(inputMessage);
   };
+
+  const handleEnableNotifications = async () => {
+    const permissionGranted = await requestNotificationPermission();
+    if (permissionGranted) {
+      await subscribeToPushNotifications();
+    }
+  };
+
+  useEffect(() => {
+    handleEnableNotifications();
+  }, []);
 
   return (
     <div
