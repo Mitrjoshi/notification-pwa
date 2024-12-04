@@ -5,7 +5,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #3c944a;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -42,7 +42,7 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: #237731;
   cursor: pointer;
   transition: border-color 0.25s;
 }
@@ -61,7 +61,12 @@ input {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: #237731;
   cursor: pointer;
   transition: border-color 0.25s;
+  color: white;
+}
+
+input::placeholder {
+  color: rgb(187, 187, 187);
 }
