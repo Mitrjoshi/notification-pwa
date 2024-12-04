@@ -9,7 +9,7 @@ self.addEventListener("push", (event) => {
 
   const options = {
     body: body || "Default notification body",
-    icon: "/icon-192x192.png", // Path to your app's icon
+    icon: "/sprite.svg", // Path to your app's icon
   };
 
   event.waitUntil(self.registration.showNotification(title, options));
