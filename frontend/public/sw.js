@@ -18,3 +18,9 @@ self.addEventListener("push", (event) => {
   // Show the notification
   event.waitUntil(self.registration.showNotification(title, options));
 });
+
+self.addEventListener("notificationclick", function (event) {
+  event.notification.close(); // Close the notification
+
+  event.waitUntil(clients.openWindow(event.notification.data.url || "/"));
+});
