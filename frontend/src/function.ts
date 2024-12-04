@@ -41,7 +41,7 @@ export const subscribeToPushNotifications = async () => {
   console.log("Push Subscription:", subscription);
 
   // Send subscription to your backend
-  await fetch("http://localhost:3000/api/subscribe", {
+  await fetch("https://notification-pwa-backend.vercel.app/api/subscribe", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(subscription),
