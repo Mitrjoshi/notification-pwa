@@ -1,76 +1,77 @@
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   requestNotificationPermission,
   subscribeToPushNotifications,
-  triggerNotification,
+  triggerLocalNotification,
 } from "./function";
 
-const NotificationButton = () => {
-  const [inputMessage, setInputMessage] = useState("");
+const NotificationButton: React.FC = () => {
+  const [notificationData, setNotificationData] = useState({
+    title: "",
+    body: "",
+    icon: "/default-icon.png",
+  });
 
-  const handleRequestPermission = async () => {
-    await requestNotificationPermission();
-  };
+  useEffect(() => {
+    // Automatically request permission and subscribe on component mount
+    const initializePushNotifications = async () => {
+      const permissionGranted = await requestNotificationPermission();
+      if (permissionGranted) {
+        const publicKey = "YOUR_VAPID_PUBLIC_KEY";
+        await subscribeToPushNotifications(publicKey);
+      }
+    };
 
-  const handleTriggerNotification = async () => {
+    initializePushNotifications();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
     const permissionGranted = await requestNotificationPermission();
-
     if (!permissionGranted) {
       alert("Notification permission denied");
       return;
     }
 
-    if (!inputMessage) return;
-
-    triggerNotification(inputMessage);
+    // Trigger local notification
+    triggerLocalNotification({
+      title: notificationData.title,
+      body: notificationData.body,
+      icon: notificationData.icon,
+    });
   };
-
-  const handleEnableNotifications = async () => {
-    const permissionGranted = await requestNotificationPermission();
-    if (permissionGranted) {
-      await subscribeToPushNotifications();
-    }
-  };
-
-  useEffect(() => {
-    handleEnableNotifications();
-  }, []);
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 12,
-      }}
-    >
-      <form
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 12,
-        }}
-        onSubmit={(e) => {
-          e.preventDefault();
-          setInputMessage("");
-        }}
-      >
-        <input
-          placeholder="Notification message"
-          value={inputMessage}
-          onChange={(e) => setInputMessage(e.target.value)}
-          type="text"
-          required
-        />
-        <button onClick={handleTriggerNotification}>Show Notification</button>
-      </form>
-
-      <button onClick={handleRequestPermission}>
-        Request Notification Permission
-      </button>
-    </div>
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        placeholder="Notification Title"
+        value={notificationData.title}
+        onChange={(e) =>
+          setNotificationData((prev) => ({ ...prev, title: e.target.value }))
+        }
+        required
+      />
+      <input
+        type="text"
+        placeholder="Notification Message"
+        value={notificationData.body}
+        onChange={(e) =>
+          setNotificationData((prev) => ({ ...prev, body: e.target.value }))
+        }
+        required
+      />
+      <input
+        type="text"
+        placeholder="Icon URL (optional)"
+        value={notificationData.icon}
+        onChange={(e) =>
+          setNotificationData((prev) => ({ ...prev, icon: e.target.value }))
+        }
+      />
+      <button type="submit">Send Notification</button>
+    </form>
   );
 };
 
