@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const BACKEND_URL = "http://localhost:3000";
+const BACKEND_URL = "https://notification-pwa-backend.vercel.app";
 const PUBLIC_VAPID_KEY =
   "BDyZ1XeOJAylJFaGS368s5oWMCjgVtF0PDvdxMrFSbQS_LUa8yL1YnTNlEd0hTYHjEeCMwyppCwOXsgSXpSAt9Y";
 
