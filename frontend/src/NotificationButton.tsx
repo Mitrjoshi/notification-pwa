@@ -51,8 +51,15 @@ const NotificationButton = () => {
         flexDirection: "column",
         alignItems: "center",
         gap: 12,
+        padding: 12,
       }}
     >
+      <p>
+        {subscriptionData
+          ? JSON.stringify(subscriptionData)
+          : "Permission denied"}
+      </p>
+
       <form
         style={{
           display: "flex",
@@ -72,7 +79,10 @@ const NotificationButton = () => {
           type="text"
           required
         />
-        <button onClick={handleTriggerNotification}>
+        <button
+          disabled={!subscriptionData}
+          onClick={handleTriggerNotification}
+        >
           Send Notification via Backend
         </button>
       </form>
