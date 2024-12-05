@@ -17,7 +17,8 @@ const NotificationButton: React.FC = () => {
     const initializePushNotifications = async () => {
       const permissionGranted = await requestNotificationPermission();
       if (permissionGranted) {
-        const publicKey = "YOUR_VAPID_PUBLIC_KEY";
+        const publicKey =
+          "BDyZ1XeOJAylJFaGS368s5oWMCjgVtF0PDvdxMrFSbQS_LUa8yL1YnTNlEd0hTYHjEeCMwyppCwOXsgSXpSAt9Y";
         await subscribeToPushNotifications(publicKey);
       }
     };
