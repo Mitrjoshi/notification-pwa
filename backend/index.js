@@ -1,57 +1,67 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 const webPush = require("web-push");
 const cors = require("cors");
+const bodyParser = require("body-parser");
 
 const app = express();
-const PORT = 3000;
 
-app.use(cors());
-
-// Middleware to parse JSON bodies
-app.use(bodyParser.json());
-
-// VAPID keys generated using web-push
+// Configure web-push with VAPID keys
 webPush.setVapidDetails(
   "mailto:mitrjoshi26@gmail.com",
   "BDyZ1XeOJAylJFaGS368s5oWMCjgVtF0PDvdxMrFSbQS_LUa8yL1YnTNlEd0hTYHjEeCMwyppCwOXsgSXpSAt9Y",
   "5GEI2I4gGNKRa0GAOp0QpVEc0wadRIpuGjlBO2TzYnk"
 );
 
-// Route to save the subscription
-app.post("/api/subscribe", (req, res) => {
+app.use(cors());
+app.use(bodyParser.json());
+
+// Store subscriptions (in a real app, use a database)
+const subscriptions = new Set();
+
+// Endpoint for client to subscribe
+app.post("/subscribe", (req, res) => {
   const subscription = req.body;
-  console.log("Received subscription:", subscription);
-  // Save subscription to your database
+
+  // Add to our set of subscriptions
+  subscriptions.add(JSON.stringify(subscription));
+
   res.status(201).json({});
+  console.log("Subscription added");
 });
 
-// Route to send notifications
-app.post("/api/send-notification", async (req, res) => {
-  const { subscription, title, body } = req.body;
+// Endpoint to send notifications
+app.post("/send-notification", (req, res) => {
+  const notificationPayload = {
+    notification: {
+      title: "New Notification",
+      body: req.body.message || "You have a new message!",
+      icon: "/sprite.svg",
+      vibrate: [100, 50, 100],
+      data: {
+        dateOfArrival: Date.now(),
+        primaryKey: 1,
+      },
+    },
+  };
 
-  const payload = JSON.stringify({
-    title: title || "Sprite",
-    body: body || "This is a default message",
-    icon: "/sprite.svg",
-  });
-
-  console.log("Notification Payload:", {
-    title: title || "Sprite",
-    body: body || "This is a default message",
-    icon: "/sprite.svg",
-  });
-
-  try {
-    await webPush.sendNotification(subscription, payload);
-    res.status(200).send("Notification sent");
-  } catch (error) {
-    console.error("Error sending notification:", error);
-    res.status(500).send("Failed to send notification");
-  }
+  Promise.all(
+    Array.from(subscriptions).map((sub) =>
+      webPush.sendNotification(
+        JSON.parse(sub),
+        JSON.stringify(notificationPayload)
+      )
+    )
+  )
+    .then(() =>
+      res.status(200).json({ message: "Notification sent successfully." })
+    )
+    .catch((err) => {
+      console.error("Error sending notification", err);
+      res.sendStatus(500);
+    });
 });
 
-// Start the server
-app.listen(3000, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

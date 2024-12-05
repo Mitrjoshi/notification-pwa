@@ -1,24 +1,22 @@
-self.addEventListener("push", (event) => {
-  // Ensure you can parse the full notification data
-  const data = event.data
-    ? event.data.json()
-    : {
-        title: "Default Notification",
-        body: "Default message",
-        icon: "/icon.png",
-      };
+// service-worker.js
+self.addEventListener("push", function (event) {
+  const data = event.data.json();
 
-  // Ensure all required properties are present
   const options = {
-    body: data.body || "No message",
-    icon: data.icon || "/default-icon.png",
-    // Add more customization options
-    badge: data.badge || "/badge.png",
-    tag: data.tag || "default-tag",
-    data: data.data || {},
+    body: data.notification.body,
+    icon: data.notification.icon,
+    vibrate: data.notification.vibrate,
+    data: data.notification.data,
   };
 
   event.waitUntil(
-    self.registration.showNotification(data.title || "Notification", options)
+    self.registration.showNotification(data.notification.title, options)
   );
+});
+
+self.addEventListener("notificationclick", function (event) {
+  event.notification.close();
+
+  // Optional: Open a specific page when notification is clicked
+  event.waitUntil(clients.openWindow("https://yourapp.com"));
 });
