@@ -1,24 +1,24 @@
 self.addEventListener("push", (event) => {
-  const data = event.data?.json() || {
-    title: "Default Notification",
-    body: "You have a new notification",
-    icon: "/default-icon.png",
-  };
+  // Ensure you can parse the full notification data
+  const data = event.data
+    ? event.data.json()
+    : {
+        title: "Default Notification",
+        body: "Default message",
+        icon: "/icon.png",
+      };
 
+  // Ensure all required properties are present
   const options = {
-    body: data.body,
+    body: data.body || "No message",
     icon: data.icon || "/default-icon.png",
-    badge: "/default-badge.png",
+    // Add more customization options
+    badge: data.badge || "/badge.png",
+    tag: data.tag || "default-tag",
     data: data.data || {},
   };
 
-  event.waitUntil(self.registration.showNotification(data.title, options));
-});
-
-self.addEventListener("notificationclick", (event) => {
-  // Close the notification
-  event.notification.close();
-
-  // Open a specific URL or perform an action
-  event.waitUntil(clients.openWindow(event.notification.data.url || "/"));
+  event.waitUntil(
+    self.registration.showNotification(data.title || "Notification", options)
+  );
 });

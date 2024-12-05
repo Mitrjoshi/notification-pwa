@@ -28,11 +28,17 @@ app.post("/api/subscribe", (req, res) => {
 
 // Route to send notifications
 app.post("/api/send-notification", async (req, res) => {
-  const { subscription, message } = req.body;
+  const { subscription, title, body } = req.body;
 
   const payload = JSON.stringify({
-    title: "Sprite",
-    body: message || "This is a default message",
+    title: title || "Sprite",
+    body: body || "This is a default message",
+    icon: "/sprite.svg",
+  });
+
+  console.log("Notification Payload:", {
+    title: title || "Sprite",
+    body: body || "This is a default message",
     icon: "/sprite.svg",
   });
 

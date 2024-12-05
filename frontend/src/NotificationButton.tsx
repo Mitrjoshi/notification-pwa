@@ -1,78 +1,86 @@
-import React, { useState, useEffect } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useState } from "react";
 import {
   requestNotificationPermission,
+  sendPushNotification,
   subscribeToPushNotifications,
-  triggerLocalNotification,
 } from "./function";
 
-const NotificationButton: React.FC = () => {
-  const [notificationData, setNotificationData] = useState({
-    title: "",
-    body: "",
-    icon: "/default-icon.png",
-  });
+const NotificationButton = () => {
+  const [inputMessage, setInputMessage] = useState("");
+  const [subscriptionData, setSubscriptionData] = useState<any>("");
 
-  useEffect(() => {
-    // Automatically request permission and subscribe on component mount
-    const initializePushNotifications = async () => {
-      const permissionGranted = await requestNotificationPermission();
-      if (permissionGranted) {
-        const publicKey =
-          "BDyZ1XeOJAylJFaGS368s5oWMCjgVtF0PDvdxMrFSbQS_LUa8yL1YnTNlEd0hTYHjEeCMwyppCwOXsgSXpSAt9Y";
-        await subscribeToPushNotifications(publicKey);
-      }
-    };
+  const handleRequestPermission = async () => {
+    await requestNotificationPermission();
+  };
 
-    initializePushNotifications();
-  }, []);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleTriggerNotification = async () => {
     const permissionGranted = await requestNotificationPermission();
+
     if (!permissionGranted) {
       alert("Notification permission denied");
       return;
     }
 
-    // Trigger local notification
-    triggerLocalNotification({
-      title: notificationData.title,
-      body: notificationData.body,
-      icon: notificationData.icon,
-    });
+    if (!inputMessage) return;
+
+    if (subscriptionData) {
+      sendPushNotification(subscriptionData, {
+        title: "Notification",
+        body: inputMessage,
+      });
+    }
   };
 
+  const handleEnableNotifications = async () => {
+    const permissionGranted = await requestNotificationPermission();
+    if (permissionGranted) {
+      const subscriptionData = await subscribeToPushNotifications();
+      setSubscriptionData(subscriptionData);
+    }
+  };
+
+  useEffect(() => {
+    handleEnableNotifications();
+  }, []);
+
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        placeholder="Notification Title"
-        value={notificationData.title}
-        onChange={(e) =>
-          setNotificationData((prev) => ({ ...prev, title: e.target.value }))
-        }
-        required
-      />
-      <input
-        type="text"
-        placeholder="Notification Message"
-        value={notificationData.body}
-        onChange={(e) =>
-          setNotificationData((prev) => ({ ...prev, body: e.target.value }))
-        }
-        required
-      />
-      <input
-        type="text"
-        placeholder="Icon URL (optional)"
-        value={notificationData.icon}
-        onChange={(e) =>
-          setNotificationData((prev) => ({ ...prev, icon: e.target.value }))
-        }
-      />
-      <button type="submit">Send Notification</button>
-    </form>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 12,
+      }}
+    >
+      <form
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 12,
+        }}
+        onSubmit={(e) => {
+          e.preventDefault();
+          setInputMessage("");
+        }}
+      >
+        <input
+          placeholder="Notification message"
+          value={inputMessage}
+          onChange={(e) => setInputMessage(e.target.value)}
+          type="text"
+          required
+        />
+        <button onClick={handleTriggerNotification}>
+          Send Notification via Backend
+        </button>
+      </form>
+
+      <button onClick={handleRequestPermission}>
+        Request Notification Permission
+      </button>
+    </div>
   );
 };
 
