@@ -36,11 +36,6 @@ app.post("/send-notification", (req, res) => {
       title: "New Notification",
       body: req.body.message || "You have a new message!",
       icon: "/sprite.svg",
-      vibrate: [100, 50, 100],
-      data: {
-        dateOfArrival: Date.now(),
-        primaryKey: 1,
-      },
     },
   };
 
