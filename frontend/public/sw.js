@@ -1,31 +1,29 @@
-self.addEventListener("push", (event) => {
-  const { message: n, body: t, icon: e } = JSON.parse(event.data.text());
+self.addEventListener("push", async (e) => {
+  const { message, body, icon } = JSON.parse(e.data.text());
 
-  event.waitUntil(
-    self.registration.showNotification(n, {
-      body: t,
-      icon: e,
+  e.waitUntil(
+    self.registration.showNotification(message, {
+      body,
+      icon,
     })
   );
 });
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
+
+  // This looks to see if the current window is already open and
+  // focuses if it is
   event.waitUntil(
     clients
       .matchAll({
         type: "window",
       })
       .then((clientList) => {
-        for (let i = 0; i < clientList.length; i++) {
-          const client = clientList[i];
-          if (client.url === "/" && "focus" in client) {
-            return client.focus();
-          }
+        for (const client of clientList) {
+          if (client.url === "/" && "focus" in client) return client.focus();
         }
-        if (clients.openWindow) {
-          return clients.openWindow("/");
-        }
+        if (clients.openWindow) return clients.openWindow("/");
       })
   );
 });
